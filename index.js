@@ -6,14 +6,18 @@ const ffmpeg = require('fluent-ffmpeg')
 //     count: 4,
 // });
 
-ffmpeg('./screenshot/tn_1.png').input('./screenshot/tn_2.png').complexFilter([
-  {
-    filter: 'hstack',
-    inputs: ['./screenshot/tn_1.png', './screenshot/tn_2.png'],
-    outputs: './screenshot/output.png'
-  }
-])
+// ffmpeg('./screenshot/tn_1.png').input('./screenshot/tn_2.png').input('./screenshot/tn_3.png').input('./screenshot/tn_4.png').complexFilter([
+//   {
+//     filter: 'vstack',
+//     options: '4',
+//   }
+// ]).output('output.jpg').run()
 
 // ffmpeg -i a.jpg -i b.jpg -filter_complex hstack output.jpg
 // ffmpeg -i tn_1.png -i tn_2.png -i tn_3.png -i tn_4.png -filter_complex "[0][1][2][3]hstack=inputs=4" output.jpg
 
+// ffmpeg -y -i "test.mp4" -frames 1 -vf "select=not(mod(n\,100)),scale=320:180,tile=10X10" "thumbnail.jpg"
+// ffmpeg -y -i "test.mp4" -frames 1 -vf "thumbnail=n=100,scale=320:180,tile=10X10" thumbnail.jpg
+
+
+ffmpeg('./test.mp4').frames(1).videoFilters("select='not(mod(n\,100))'", 'scale=320:180', 'tile=10X10').output("thumbnail6.jpg").run();
