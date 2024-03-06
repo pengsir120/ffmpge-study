@@ -1,4 +1,7 @@
 const ffmpeg = require('fluent-ffmpeg')
+const fs = require('fs')
+const path = require('path')
+const minioClient = require('./minio')
 
 // ffmpeg('./test.mp4')
 //   .thumbnails({
@@ -20,4 +23,22 @@ const ffmpeg = require('fluent-ffmpeg')
 // ffmpeg -y -i "test.mp4" -frames 1 -vf "thumbnail=n=100,scale=320:180,tile=10X10" thumbnail.jpg
 
 
-ffmpeg('./test.mp4').frames(1).videoFilters("select='not(mod(n\,100))'", 'scale=320:180', 'tile=10X10').output("thumbnail6.jpg").run();
+// ffmpeg(fs.createReadStream(path.resolve("./test.mp4"))).frames(1).videoFilters("select='not(mod(n\,100))'", 'scale=320:180', 'tile=10X10').output("thumbnail7.jpg").run();
+
+
+
+const getPreview = async () => {
+  await minioClient.fGetObject('test', '1709016184259.mp4', 'temp/1709016184259.mp4', (err) => {
+    if(err) {
+      return console.log(err);
+    }
+    console.log('success');
+  })
+  ffmpeg('temp/1709016184259.mp4').frames(1).videoFilters("select='not(mod(n\,100))'", 'scale=320:180', 'tile=10X10').output("thumbnail7.jpg").on('end', () => {
+    fs.unlink('temp/1709016184259.mp4', () => {
+      console.log('删除成功');
+    })
+  }).run()
+}
+
+getPreview()
