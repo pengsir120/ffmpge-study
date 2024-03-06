@@ -25,20 +25,30 @@ const minioClient = require('./minio')
 
 // ffmpeg(fs.createReadStream(path.resolve("./test.mp4"))).frames(1).videoFilters("select='not(mod(n\,100))'", 'scale=320:180', 'tile=10X10').output("thumbnail7.jpg").run();
 
+const ffmpegSync = async (filename) => {
+  return new Promise((resolve, reject) => {
+    ffmpeg(`temp/${filename}.mp4`)
+    .frames(1)
+    .videoFilters("select='not(mod(n\,100))'", 'scale=320:180', 'tile=10X10')
+    .output(`temp/${filename}.jpg`)
+    .on("end", () => {
+      resolve()
+    })
+    .on('error', (err) => {
+      return reject(new Error(err))
+    })
+    .run()
+  })
+  
+}
 
 
 const getPreview = async () => {
-  await minioClient.fGetObject('test', '1709016184259.mp4', 'temp/1709016184259.mp4', (err) => {
-    if(err) {
-      return console.log(err);
-    }
-    console.log('success');
-  })
-  ffmpeg('temp/1709016184259.mp4').frames(1).videoFilters("select='not(mod(n\,100))'", 'scale=320:180', 'tile=10X10').output("thumbnail7.jpg").on('end', () => {
-    fs.unlink('temp/1709016184259.mp4', () => {
-      console.log('删除成功');
-    })
-  }).run()
+  const filename = '1709710284055'
+  await minioClient.fGetObject('test', `${filename}.mp4`, `temp/${filename}.mp4`)
+  await ffmpegSync(filename)
+  await fs.unlinkSync(`temp/${filename}.mp4`)
 }
+
 
 getPreview()
