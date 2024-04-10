@@ -1,3 +1,4 @@
+const { log } = require('console')
 const ffmpeg = require('fluent-ffmpeg')
 const fs = require('fs')
 // const minioClient = require('./minio')
@@ -90,3 +91,30 @@ getVideoThumbPics('spider.mp4', 4)
 // .videoFilters("select='gte(n\, 72000)'", "select='not(mod(n\,240))'", 'scale=320:180', 'tile=10X10')
 // .output(`test44.jpg`)
 // .run()
+// ffmpeg.ffprobe('deadpool.mp4', (err, metadata) => {
+//   const { avg_frame_rate } = metadata.streams[0]
+//   console.log(avg_frame_rate);
+// })
+
+
+// fs.readdir('carrierInstructions', (err, files) => {
+//   for(let i = 0; i < files.length; i++) {
+//     ffmpeg(`carrierInstructions/image (${i}).png`).output(`carrierInstructions/${i + 1}.jpg`).run()
+//   }
+// })
+
+const dirs = ['operatingInstructions']
+const transformDirPic = async(dirs) => {
+  for(let i = 0; i < dirs.length; i++) {
+    const files = fs.readdirSync(dirs[i])
+    // 如果文件夹不存在就创建
+    if(!fs.existsSync(`${dirs[i]}/${dirs[i]}`)) {
+      fs.mkdirSync(`${dirs[i]}/${dirs[i]}`)
+    }
+    for(let j = 0; j < files.length; j++) {
+      console.log(files[j]);
+      ffmpeg(`${dirs[i]}/${files[j]}`).output(`${dirs[i]}/${dirs[i]}/${j}.jpg`).run()
+    }
+  }
+}
+transformDirPic(dirs)
