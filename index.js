@@ -144,8 +144,15 @@ const { getVideoTime } = require('./utils/getVideoInfo')
 // fileRead()
 
 // 截取视频片段
-ffmpeg('temp/audio.mp4')
-  .setStartTime('00:00:00')
-  .duration('00:00:02')
-  .output('temp/audio.mp3')
-  .run()
+// ffmpeg('temp/audio.mp4')
+//   .setStartTime('00:00:00')
+//   .duration('00:00:02')
+//   .output('temp/audio.mp3')
+//   .run()
+
+// 拼接音频文件
+ffmpeg()
+  .addInput('temp/scanCode.mp3')
+  .addInput('temp/audio.mp3')
+  .addInput('temp/scanCode.mp3')
+  .mergeToFile('temp/mergeAudio.mp3')
