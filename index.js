@@ -39,17 +39,17 @@ const { getVideoTime } = require('./utils/getVideoInfo')
 //   console.log(metadata);
 // })
 
-const getVideoMetaData = async (filename) => {
-  return new Promise((resolve, reject) => {
-    ffmpeg.ffprobe(filename, (err, metadata) => {
-      if(err) {
-        reject(new Error(err))
-      }else {
-        resolve(metadata)
-      }
-    })
-  })
-}
+// const getVideoMetaData = async (filename) => {
+//   return new Promise((resolve, reject) => {
+//     ffmpeg.ffprobe(filename, (err, metadata) => {
+//       if(err) {
+//         reject(new Error(err))
+//       }else {
+//         resolve(metadata)
+//       }
+//     })
+//   })
+// }
 
 // const getVideoThumbPics = async (filename, timeStep) => {
 //   const metadata = await getVideoMetaData(filename)
@@ -122,23 +122,30 @@ const getVideoMetaData = async (filename) => {
 // transformDirPic(dirs)
 
 
-const fileRead = async() => {
-  const dirPath = 'F:/DownKyi-1.6.1/Media'
-  const files = fs.readdirSync(dirPath)
-  const videoPromiseList = []
-  let duration = 0
-  for(let i = 0; i < files.length; i++) {
-    const firstDir = fs.readdirSync(path.resolve(dirPath, files[i]))
-    firstDir.filter(item => item.lastIndexOf('mp4') > 0).forEach(filePath => {
-      videoPromiseList.push(getVideoMetaData(path.resolve(dirPath, files[i], filePath)))
-    })
-  }
-  Promise.all(videoPromiseList).then(resList => {
-    resList.forEach(({streams}) => {
-      duration += streams[0].duration
-    })
-    console.log(getVideoTime(duration));
-  })
-}
+// const fileRead = async() => {
+//   const dirPath = 'F:/DownKyi-1.6.1/Media'
+//   const files = fs.readdirSync(dirPath)
+//   const videoPromiseList = []
+//   let duration = 0
+//   for(let i = 0; i < files.length; i++) {
+//     const firstDir = fs.readdirSync(path.resolve(dirPath, files[i]))
+//     firstDir.filter(item => item.lastIndexOf('mp4') > 0).forEach(filePath => {
+//       videoPromiseList.push(getVideoMetaData(path.resolve(dirPath, files[i], filePath)))
+//     })
+//   }
+//   Promise.all(videoPromiseList).then(resList => {
+//     resList.forEach(({streams}) => {
+//       duration += streams[0].duration
+//     })
+//     console.log(getVideoTime(duration));
+//   })
+// }
 
-fileRead()
+// fileRead()
+
+// 截取视频片段
+ffmpeg('temp/audio.mp4')
+  .setStartTime('00:00:00')
+  .duration('00:00:02')
+  .output('temp/audio.mp3')
+  .run()
