@@ -39,18 +39,20 @@ const { getVideoTime } = require('./utils/getVideoInfo')
 //   console.log(metadata);
 // })
 
-// const getVideoMetaData = async (filename) => {
-//   return new Promise((resolve, reject) => {
-//     ffmpeg.ffprobe(filename, (err, metadata) => {
-//       if(err) {
-//         reject(new Error(err))
-//       }else {
-//         resolve(metadata)
-//       }
-//     })
-//   })
-// }
+// 获取视频元信息
+const getVideoMetaData = async (filename) => {
+  return new Promise((resolve, reject) => {
+    ffmpeg.ffprobe(filename, (err, metadata) => {
+      if(err) {
+        reject(new Error(err))
+      }else {
+        resolve(metadata)
+      }
+    })
+  })
+}
 
+// 获取视频预览图
 // const getVideoThumbPics = async (filename, timeStep) => {
 //   const metadata = await getVideoMetaData(filename)
 //   const { r_frame_rate, nb_frames } = metadata.streams[0]
@@ -67,7 +69,6 @@ const { getVideoTime } = require('./utils/getVideoInfo')
 //     .run()
 //   }
 // }
-
 // getVideoThumbPics('spider.mp4', 4)
 
 // ffmpeg('test.mp4')
@@ -105,7 +106,8 @@ const { getVideoTime } = require('./utils/getVideoInfo')
 //   }
 // })
 
-// const dirs = ['operatingInstructions']
+// 转换图片格式
+// const dirs = ['scrapSteelInstructions']
 // const transformDirPic = async(dirs) => {
 //   for(let i = 0; i < dirs.length; i++) {
 //     const files = fs.readdirSync(dirs[i])
@@ -121,27 +123,26 @@ const { getVideoTime } = require('./utils/getVideoInfo')
 // }
 // transformDirPic(dirs)
 
-
-// const fileRead = async() => {
-//   const dirPath = 'F:/DownKyi-1.6.1/Media'
-//   const files = fs.readdirSync(dirPath)
-//   const videoPromiseList = []
-//   let duration = 0
-//   for(let i = 0; i < files.length; i++) {
-//     const firstDir = fs.readdirSync(path.resolve(dirPath, files[i]))
-//     firstDir.filter(item => item.lastIndexOf('mp4') > 0).forEach(filePath => {
-//       videoPromiseList.push(getVideoMetaData(path.resolve(dirPath, files[i], filePath)))
-//     })
-//   }
-//   Promise.all(videoPromiseList).then(resList => {
-//     resList.forEach(({streams}) => {
-//       duration += streams[0].duration
-//     })
-//     console.log(getVideoTime(duration));
-//   })
-// }
-
-// fileRead()
+// 获取文件夹下第一级文件目录中所有视频时长总和
+const fileRead = async() => {
+  const dirPath = 'F:/DownKyi-1.6.1/Media'
+  const files = fs.readdirSync(dirPath)
+  const videoPromiseList = []
+  let duration = 0
+  for(let i = 0; i < files.length; i++) {
+    const firstDir = fs.readdirSync(path.resolve(dirPath, files[i]))
+    firstDir.filter(item => item.lastIndexOf('mp4') > 0).forEach(filePath => {
+      videoPromiseList.push(getVideoMetaData(path.resolve(dirPath, files[i], filePath)))
+    })
+  }
+  Promise.all(videoPromiseList).then(resList => {
+    resList.forEach(({streams}) => {
+      duration += streams[0].duration
+    })
+    console.log(getVideoTime(duration));
+  })
+}
+fileRead()
 
 // 截取视频片段
 // ffmpeg('temp/audio.mp4')
@@ -151,8 +152,8 @@ const { getVideoTime } = require('./utils/getVideoInfo')
 //   .run()
 
 // 拼接音频文件
-ffmpeg()
-  .addInput('temp/scanCode.mp3')
-  .addInput('temp/audio.mp3')
-  .addInput('temp/scanCode.mp3')
-  .mergeToFile('temp/mergeAudio.mp3')
+// ffmpeg()
+//   .addInput('temp/scanCode.mp3')
+//   .addInput('temp/audio.mp3')
+//   .addInput('temp/scanCode.mp3')
+//   .mergeToFile('temp/mergeAudio.mp3')
